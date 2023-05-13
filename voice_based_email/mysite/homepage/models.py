@@ -27,6 +27,7 @@ class Mail(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     tag = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=10, choices=[('read', 'read'), ('unread', 'unread'), ('sent','sent')], default='unread')
     
     def __str__(self) -> str:
-        return super().__str__()
+        return self.subject  

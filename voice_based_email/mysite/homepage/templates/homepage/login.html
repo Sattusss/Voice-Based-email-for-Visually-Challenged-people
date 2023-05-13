@@ -66,6 +66,7 @@
 					
 					if(data.result == 'success'){
 						
+						// post to homepage:options
 						window.location = "{% url 'homepage:options' %}";
 					}
 					else if(data.result == 'failure'){

@@ -6,6 +6,7 @@ from .models import Compose
 import imaplib,email
 from gtts import gTTS
 import os
+from .models import Mail
 from playsound import playsound
 from django.http import HttpResponse
 import speech_recognition as sr
@@ -18,7 +19,10 @@ from django.http import JsonResponse
 import re
 import imaplib
 import email
-
+# login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
+from    django.contrib.auth.models import User
 
 
 
@@ -31,10 +35,8 @@ addr = ""
 item =""
 subject = ""
 body = ""
-s = smtplib.SMTP('smtp.gmail.com', 587)
+s = smtplib.SMTP('smtp.mail.yahoo.com', 587)
 s.starttls()
-imap_url = 'imap.gmail.com'
-conn = imaplib.IMAP4_SSL(imap_url)
 attachment_dir = 'C:/Users/HP/Desktop/voice_based_email/mysite/homepage/attachments'
 
 def texttospeech(text, filename):
@@ -102,6 +104,8 @@ def convert_special_char(text):
 
 
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('homepage:options')
     global i, addr, passwrd 
     print(i, addr, passwrd)
     if request.method == 'POST':
@@ -151,14 +155,10 @@ def login_view(request):
         passwrd = passwrd.lower()
         passwrd = convert_special_char(passwrd)
         print(passwrd)
-
-        imap_url = 'imap.gmail.com'
-        #passwrd = 'user@123'
-        #addr = 'simpleuser850@gmail.com'
-        conn = imaplib.IMAP4_SSL(imap_url)
         try:
-            conn.login(addr, passwrd)
-            s.login(addr, passwrd)
+            user = User.objects.get(email=addr)
+            if user.check_password(passwrd):
+                login(request, user)
             texttospeech("Congratulations. You have logged in successfully. You will now be redirected to the menu page.", f'{file}{i}')
             i +=1
             return JsonResponse({'result' : 'success'})
@@ -218,7 +218,7 @@ def compose_view(request):
         i +=1
         flag = True
         flag1 = True
-        fromaddr = addr
+        fromaddr = "satyamtiwari.345@yahoo.com"
         toaddr = list()
         while flag1:
             while flag:
@@ -464,21 +464,17 @@ def read_mails(mail_list,folder):
     mail_count = 0
     to_read_list = list()
     for item in mail_list:
-        result, email_data = conn.fetch(item, '(RFC822)')
-        raw_email = email_data[0][1].decode()
-        message = email.message_from_string(raw_email)
-        To = message['To']
-        From = message['From']
-        Subject = message['Subject']
-        Msg_id = message['Message-ID']
+        To = item.sender.username
+        From = item.recipient.username
+        Subject = item.subject
         texttospeech("Email number " + str(mail_count + 1) + "    .The mail is from " + From + " to " + To + "  . The subject of the mail is " + Subject, f'{file}{i}')
         i +=1
-        print('message id= ', Msg_id)
+        print('message id= ', item.id)
         print('From :', From)
         print('To :', To)
         print('Subject :', Subject)
         print("\n")
-        to_read_list.append(Msg_id)
+        to_read_list.append(item.id)
         mail_count = mail_count + 1
 
     flag = True
@@ -499,22 +495,17 @@ def read_mails(mail_list,folder):
         n = int(n)
         msgid = to_read_list[n - 1]
         print("message id is =", msgid)
-        typ, data = conn.search(None, '(HEADER Message-ID "%s")' % msgid)
-        data = data[0]
-        result, email_data = conn.fetch(data, '(RFC822)')
-        raw_email = email_data[0][1].decode()
-        message = email.message_from_string(raw_email)
-        To = message['To']
-        From = message['From']
-        Subject = message['Subject']
-        Msg_id = message['Message-ID']
+        message = Mail.objects.get(id=msgid)
+        To = message.sender.username
+        From = message.recipient.username
+        Subject = message.subject
+        Msg_id = message.id
         print('From :', From)
         print('To :', To)
         print('Subject :', Subject)
         texttospeech("The mail is from " + From + " to " + To + "  . The subject of the mail is " + Subject, f'{file}{i}')
         i +=1
-        Body = get_body(message)
-        Body = Body.decode()
+        Body = message.body()
         Body = re.sub('<.*?>', '', Body)
         Body = os.linesep.join([s for s in Body.splitlines() if s])
         if Body != '':
@@ -552,8 +543,7 @@ def read_mails(mail_list,folder):
             print(ans)
             if ans == "yes":
                 try:
-                    conn.store(data, '+X-GM-LABELS', '\\Trash')
-                    conn.expunge()
+                    message.delete()
                     texttospeech("The mail has been deleted successfully.", f'{file}{i}')
                     i +=1
                     print("mail deleted")
@@ -569,8 +559,7 @@ def read_mails(mail_list,folder):
             print(ans)
             if ans == "yes":
                 try:
-                    conn.store(data, '+FLAGS', '\\Deleted')
-                    conn.expunge()
+                    message.delete()
                     texttospeech("The mail has been deleted permanently.", f'{file}{i}')
                     i +=1
                     print("mail deleted")
@@ -588,32 +577,27 @@ def read_mails(mail_list,folder):
             flag = False
 
 def search_specific_mail(folder,key,value,foldername):
-    global i, conn
-    conn.select(folder)
-    result, data = conn.search(None,key,'"{}"'.format(value))
-    mail_list=data[0].split()
-    if len(mail_list) != 0:
-        texttospeech("There are " + str(len(mail_list)) + " emails with this email ID.", f'{file}{i}')
-        i +=1
-    if len(mail_list) == 0:
-        texttospeech("There are no emails with this email ID.", f'{file}{i}')
-        i +=1
-    else:
-        read_mails(mail_list,foldername)
+    # global i, conn
+    # mails = Mail.objects.filter(recipient=, status=folder)
+  
+    # mail_list=data[0].split()
+    # if len(mail_list) != 0:
+    #     texttospeech("There are " + str(len(mail_list)) + " emails with this email ID.", f'{file}{i}')
+    #     i +=1
+    # if len(mail_list) == 0:
+    #     texttospeech("There are no emails with this email ID.", f'{file}{i}')
+    #     i +=1
+    # else:
+    #     read_mails(mail_list,foldername)
+    pass
 
 def inbox_view(request):
     global i, addr, passwrd, conn
     if request.method == 'POST':
-        imap_url = 'imap.gmail.com'
-        conn = imaplib.IMAP4_SSL(imap_url)
-        conn.login(addr, passwrd)
-        conn.select('"INBOX"')
-        result, data = conn.search(None, '(UNSEEN)')
-        unread_list = data[0].split()
-        no = len(unread_list)
-        result1, data1 = conn.search(None, "ALL")
-        mail_list = data1[0].split()
-        text = "You have reached your inbox. There are " + str(len(mail_list)) + " total mails in your inbox. You have " + str(no) + " unread emails" + ". To read unread emails say unread. To search a specific email say search. To go back to the menu page say back. To logout say logout."
+        unread_mails = Mail.objects.filter(recipient=request.user, status='unread')
+        mail_list = Mail.objects.filter(recipient=request.user)
+        no = unread_mails.count()
+        text = "You have reached your inbox. There are " + str(mail_list.count()) + " total mails in your inbox. You have " + str(no) + " unread emails" + ". To read unread emails say unread. To search a specific email say search. To go back to the menu page say back. To logout say logout."
         texttospeech(text, f'{file}{i}')
         i +=1
         flag = True
@@ -621,10 +605,10 @@ def inbox_view(request):
             act = speechtotext(5)
             act = act.lower()
             print(act)
-            if act == 'unread':
+            if act == 'unread' or act=='android' or act=='hundred':
                 flag = False
                 if no!=0:
-                    read_mails(unread_list,'inbox')
+                    read_mails(unread_mails,'inbox')
                 else:
                     texttospeech("You have no unread emails.", f'{file}{i}')
                     i +=1
