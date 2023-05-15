@@ -35,8 +35,11 @@ addr = ""
 item =""
 subject = ""
 body = ""
-s = smtplib.SMTP('smtp.mail.yahoo.com', 587)
+s = smtplib.SMTP('mail.digipodium.com', 587)
+email_username = 'satyamtiwari4430@digipodium.com'
+email_password = 'projectforblind'
 s.starttls()
+s.login(email_username, email_password)
 attachment_dir = 'C:/Users/HP/Desktop/voice_based_email/mysite/homepage/attachments'
 
 def texttospeech(text, filename):
@@ -189,6 +192,7 @@ def options_view(request):
         i +=1
         act = speechtotext(5)
         act = act.lower()
+        print('action is ', act)
         if act == 'compose':
             return JsonResponse({'result' : 'compose'})
         elif act == 'inbox':
@@ -197,11 +201,12 @@ def options_view(request):
             return JsonResponse({'result' : 'sent'})
         elif act == 'trash':
             return JsonResponse({'result' : 'trash'})
-        elif act == 'log out':
+        elif act == 'log out' or act =='gaon gaon':
             addr = ""
             passwrd = ""
             texttospeech("You have been logged out of your account and now will be redirected back to the login page.",f'{file}{i}')
             i +=1
+            logout(request)
             return JsonResponse({'result': 'logout'})
         else:
             texttospeech("Invalid action. Please try again.", f'{file}{i}')
@@ -332,9 +337,10 @@ def compose_view(request):
             s.sendmail(fromaddr, newtoaddr, msg.as_string())
             texttospeech("Your email has been sent successfully. You will now be redirected to the menu page.", f'{file}{i}')
             i +=1
-        except:
+        except Exception as e:
             texttospeech("Sorry, your email failed to send. please try again. You will now be redirected to the the compose page again.", f'{file}{i}')
             i +=1
+            print(e)
             return JsonResponse({'result': 'failure'})
         s.quit()
         return JsonResponse({'result' : 'success'})
@@ -634,7 +640,7 @@ def inbox_view(request):
             elif act == 'back':
                 texttospeech("You will now be redirected to the menu page.", f'{file}{i}')
                 i +=1
-                conn.logout()
+                logout(request)
                 return JsonResponse({'result': 'success'})
 
             elif act == 'log out':
