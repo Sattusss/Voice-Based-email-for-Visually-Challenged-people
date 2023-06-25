@@ -19,6 +19,44 @@ Voice-Based Email for Visually Challenged People is a project aimed at developin
    ```shell
    git clone https://github.com/your-username/Voice-Based-email-for-Visually-Challenged-people.git
 
+1. Install the required dependencies:
+   
+   pip install -r requirements.txt
+
+2. Configure the email account credentials and settings in config.py.
+
+3. Run the application:
+
+   python main.py
+   
+## Usage
+1. Launch the application.
+
+2. Speak commands to compose and send emails, manage the inbox, and listen to incoming emails.
+3. Follow the voice prompts for further instructions.
+   
+## Contributing
+Contributions are welcome! If you'd like to contribute to this project, please follow these steps:
+1. Fork the repository.
+2. Create a new branch.
+3. Make your changes and test them thoroughly.
+4. Submit a pull request describing your changes.
+
+## License
+This project is licensed under the MIT License. See the LICENSE file for more information.
+
+## Acknowledgments
+- SpeechRecognition
+- pyttsx3
+- IMAPClient
+- SMTP
+
+## Contact
+For any questions or inquiries, please reach out to:
+
+Your Name
+Email: itssatyam.345@gmail.com
+
 
 # Virtual Assistance For The Blind 
 
