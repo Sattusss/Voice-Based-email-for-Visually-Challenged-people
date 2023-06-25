@@ -57,9 +57,6 @@ For any questions or inquiries, please reach out to:
 Your Name
 Email: itssatyam.345@gmail.com
 
-
-# Virtual Assistance For The Blind 
-
 <br>
 
 ![](https://img.shields.io/github/forks/Candida18/Virtual-Assistance-For-The-Blind?style=for-the-badge) &emsp;  &emsp; 
