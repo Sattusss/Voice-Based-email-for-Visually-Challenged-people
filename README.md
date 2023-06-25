@@ -1,3 +1,25 @@
+# Voice-Based Email for Visually Challenged People
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/python-v3.9+-blue.svg)](https://www.python.org/downloads/release/python-390/)
+
+Voice-Based Email for Visually Challenged People is a project aimed at developing an accessible email application that enables visually challenged individuals to compose, send, and manage emails using voice commands. This project leverages speech recognition and text-to-speech technologies to facilitate hands-free email communication.
+
+## Features
+
+- Voice-controlled email composition and sending.
+- Inbox management through voice commands.
+- Text-to-speech functionality for reading incoming emails.
+- User-friendly and intuitive interface.
+
+## Installation
+
+1. Clone the repository:
+
+   ```shell
+   git clone https://github.com/your-username/Voice-Based-email-for-Visually-Challenged-people.git
+
+
 # Virtual Assistance For The Blind 
 
 <br>
