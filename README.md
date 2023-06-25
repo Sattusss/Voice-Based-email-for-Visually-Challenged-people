@@ -57,14 +57,6 @@ For any questions or inquiries, please reach out to:
 Your Name
 Email: itssatyam.345@gmail.com
 
-<br>
-
-![](https://img.shields.io/github/forks/Candida18/Virtual-Assistance-For-The-Blind?style=for-the-badge) &emsp;  &emsp; 
-![](https://img.shields.io/github/stars/Candida18/Virtual-Assistance-For-The-Blind?style=for-the-badge) &emsp;  &emsp; 
-![](https://img.shields.io/github/license/Candida18/Virtual-Assistance-For-The-Blind?style=for-the-badge) &emsp; 
-
-<br>
-
 ## ABSTRACT: 
 <p align="justify">One of the most common forms of communication among people is Email. A lot of confidential and urgent information is exchanged over emails. There are about 253 million visually impaired people worldwide. These visually impaired people are facing a problem with communication. Since technology is growing day by day, these visually challenged people feel that they are more challenged.</p>
 
